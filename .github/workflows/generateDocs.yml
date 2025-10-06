@@ -1,4 +1,4 @@
-name: Scheduled Shell Command
+name: Scheduled Docs
 
 on:
   schedule:
