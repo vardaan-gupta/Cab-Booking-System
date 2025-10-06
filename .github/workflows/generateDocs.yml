@@ -25,10 +25,9 @@ jobs:
         
     - name: Authenticate and use GitHub Copilot
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.Githubcopilot }}
       run: |
-        echo "Authenticating with GitHub Copilot"
-        echo $GITHUB_TOKEN
+        echo "Authenticating with GitHub Copilot
         copilot --version
         
         echo "Generating documentation with Copilot"
