@@ -1,0 +1,35 @@
+name: Scheduled Shell Command
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at 12:00 AM (midnight) UTC daily
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  run-command:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        
+    - name: Install GitHub Copilot CLI
+      run: |
+        echo "Installing GitHub Copilot CLI at $(date)"
+        npm install -g @github/copilot
+        
+    - name: Authenticate and use GitHub Copilot
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "Authenticating with GitHub Copilot"
+        echo $GITHUB_TOKEN
+        copilot --version
+        
+        echo "Generating documentation with Copilot"
+        copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository's purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
