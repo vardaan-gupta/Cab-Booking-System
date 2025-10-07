@@ -32,5 +32,5 @@ jobs:
         echo $GITHUB_TOKEN
         
         echo "Generating documentation with Copilot"
-        # copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
+        copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
         curl https://api.githubcopilot.com/models -H "Authorization: Bearer $GITHUB_TOKEN" -H "Copilot-Integration-Id: copilot-developer"
