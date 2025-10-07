@@ -25,10 +25,11 @@ jobs:
         
     - name: Authenticate and use GitHub Copilot
       env:
-        GITHUB_TOKEN: ${{ secrets.Githubcopilot }}
+        GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       run: |
         echo "Authenticating with GitHub Copilot"
         copilot --version
+        echo $GITHUB_TOKEN
         
         echo "Generating documentation with Copilot"
         copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
