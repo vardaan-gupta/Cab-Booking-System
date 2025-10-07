@@ -23,36 +23,54 @@ jobs:
         echo "Installing GitHub Copilot CLI at $(date)"
         npm install -g @github/copilot
         
+    - name: Check for changes
+      id: changes
+      run: |
+        git fetch origin
+        CHANGES=$(git diff --name-only HEAD~1 HEAD)
+        echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+        echo "has_changes=$([ -n "$CHANGES" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        
+    - name: Set execution condition
+      id: should_run
+      run: |
+        SHOULD_RUN=${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true' }}
+        echo "execute=$SHOULD_RUN" >> $GITHUB_OUTPUT
+        
     - name: Authenticate and use GitHub Copilot
+      if: steps.should_run.outputs.execute == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       run: |
         echo "Authenticating with GitHub Copilot"
         copilot --version
-        echo $GITHUB_TOKEN
-        
-        echo "Generating documentation with Copilot"
+        echo "Manual trigger - Generating full documentation"
         copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
+       
     
     
     - name: Checkout GitHub Wiki
+      if: steps.should_run.outputs.execute == 'true'
       run: |
         echo "Checking out GitHub Wiki"
-        git clone https://github.com/${{ github.repository }}.wiki.git wiki
+        git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
         cd wiki
         ls -la
     
     - name: Copy Documentation to Wiki
+      if: steps.should_run.outputs.execute == 'true'
       run: |
         echo "Copying Documentation.md to wiki directory"
         cp Documentation.md wiki/Documentation.md
     
     - name: Commit and Push Changes in Wiki
+      if: steps.should_run.outputs.execute == 'true'
       run: |
         echo "Committing and pushing changes in Wiki"
         cd wiki
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
         git add Documentation.md
         git commit -m "Automated update of Documentation.md"
         git push origin HEAD:main
