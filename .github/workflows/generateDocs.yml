@@ -33,4 +33,27 @@ jobs:
         
         echo "Generating documentation with Copilot"
         copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
-        curl https://api.githubcopilot.com/models -H "Authorization: Bearer $GITHUB_TOKEN" -H "Copilot-Integration-Id: copilot-developer"
+    
+    
+    - name: Checkout GitHub Wiki
+      run: |
+        echo "Checking out GitHub Wiki"
+        git clone https://github.com/${{ github.repository }}.wiki.git wiki
+        cd wiki
+        ls -la
+    
+    - name: Copy Documentation to Wiki
+      run: |
+        echo "Copying Documentation.md to wiki directory"
+        cp Documentation.md wiki/Documentation.md
+    
+    - name: Commit and Push Changes in Wiki
+      run: |
+        echo "Committing and pushing changes in Wiki"
+        cd wiki
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add Documentation.md
+        git commit -m "Automated update of Documentation.md"
+        git push origin HEAD:main
+      continue-on-error: true  # Continue even if there are no changes to commit
