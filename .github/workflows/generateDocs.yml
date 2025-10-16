@@ -26,8 +26,12 @@ jobs:
     - name: Check for changes
       id: changes
       run: |
-        git fetch origin
-        CHANGES=$(git diff --name-only HEAD~1 HEAD)
+        git fetch --prune --unshallow || git fetch --prune origin "+refs/heads/*:refs/remotes/origin/*"
+        if git rev-parse --verify HEAD~1 > /dev/null 2>&1; then
+          CHANGES=$(git diff --name-only HEAD~1 HEAD)
+        else
+          CHANGES=$(git ls-files)
+        fi
         echo "changes=$CHANGES" >> $GITHUB_OUTPUT
         echo "has_changes=$([ -n "$CHANGES" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         
