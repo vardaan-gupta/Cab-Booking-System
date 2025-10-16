@@ -51,17 +51,29 @@ jobs:
         echo "Manual trigger - Generating full documentation"
         copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
        
-    
-    
-    - name: Checkout GitHub Wiki
+    - name: Initialize or Checkout GitHub Wiki
       if: steps.should_run.outputs.execute == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       run: |
-        echo "Checking out GitHub Wiki"
-        git clone https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git wiki
-        cd wiki
-        ls -la
+        echo "Attempting to checkout GitHub Wiki"
+        if git clone https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git wiki 2>/dev/null; then
+          echo "Wiki repository found and cloned"
+          cd wiki
+          ls -la
+        else
+          echo "Wiki repository not found, creating new wiki directory"
+          mkdir -p wiki
+          cd wiki
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add origin https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git
+          echo "# Wiki" > Home.md
+          git add Home.md
+          git commit -m "Initialize wiki"
+          git push -u origin master || git push -u origin main
+        fi
     
     - name: Copy Documentation to Wiki
       if: steps.should_run.outputs.execute == 'true'
@@ -71,13 +83,18 @@ jobs:
     
     - name: Commit and Push Changes in Wiki
       if: steps.should_run.outputs.execute == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       run: |
         echo "Committing and pushing changes in Wiki"
         cd wiki
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
         git add Documentation.md
-        git commit -m "Automated update of Documentation.md"
-        git push origin HEAD:main
-      continue-on-error: true  # Continue even if there are no changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Automated update of Documentation.md"
+          git push origin HEAD:master || git push origin HEAD:main
+        fi
+      continue-on-error: true
