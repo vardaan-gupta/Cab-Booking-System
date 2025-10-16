@@ -73,7 +73,7 @@ jobs:
           echo "# Wiki" > Home.md
           git add Home.md
           git commit -m "Initialize wiki"
-          git push -u origin master || git push -u origin main
+          git push -u origin main
         fi
     
     - name: Copy Documentation to Wiki
@@ -96,6 +96,6 @@ jobs:
           echo "No changes to commit"
         else
           git commit -m "Automated update of Documentation.md"
-          git push origin HEAD:master || git push origin HEAD:main
+          git push origin HEAD:main
         fi
       continue-on-error: true
