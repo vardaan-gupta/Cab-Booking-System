@@ -55,9 +55,11 @@ jobs:
     
     - name: Checkout GitHub Wiki
       if: steps.should_run.outputs.execute == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
       run: |
         echo "Checking out GitHub Wiki"
-        git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+        git clone https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git wiki
         cd wiki
         ls -la
     
