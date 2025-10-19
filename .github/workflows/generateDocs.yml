@@ -96,6 +96,6 @@ jobs:
           echo "No changes to commit"
         else
           git commit -m "Automated update of Documentation.md"
-          git push origin HEAD:main
+          git push --set-upstream https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git main
         fi
       continue-on-error: true
