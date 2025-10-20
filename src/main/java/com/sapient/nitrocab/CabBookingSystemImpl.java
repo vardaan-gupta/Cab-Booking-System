@@ -27,11 +27,7 @@ package com.sapient.nitrocab;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * User :  Suresh
- * Date :  02/10/15
- * Version : v1
- */
+
 public class CabBookingSystemImpl implements ICabBookingSystem {
 
     private Set<Cab> availableCabs = new HashSet<>();
