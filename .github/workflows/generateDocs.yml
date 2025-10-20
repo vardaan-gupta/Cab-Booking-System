@@ -65,6 +65,7 @@ jobs:
           echo "Wiki repository not found, creating new wiki directory"
           mkdir -p wiki
           cd wiki
+          ls -la
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -79,6 +80,8 @@ jobs:
     - name: Copy Documentation to Wiki
       if: steps.should_run.outputs.execute == 'true'
       run: |
+        pwd
+        ls -la
         echo "Copying Documentation.md to wiki directory"
         cp Documentation.md wiki/Documentation.md
     
@@ -89,13 +92,19 @@ jobs:
       run: |
         echo "Committing and pushing changes in Wiki"
         cd wiki
+        echo 'inside wiki repo'
+        pwd
+        ls -la
+        git pull origin master || git pull origin main
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add Documentation.md
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
+          echo "Committing files - "
+          git diff --staged --name-only
           git commit -m "Automated update of Documentation.md"
-          git push --set-upstream https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git main
-        fi
+          git push origin main
+        fi  
       continue-on-error: true
