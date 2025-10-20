@@ -49,7 +49,8 @@ jobs:
         echo "Authenticating with GitHub Copilot"
         copilot --version
         echo "Manual trigger - Generating full documentation"
-        copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
+        touch Documentation1.md
+        # copilot -p "create a Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
        
     - name: Initialize or Checkout GitHub Wiki
       if: steps.should_run.outputs.execute == 'true'
@@ -70,12 +71,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote add origin https://$GITHUB_TOKEN@github.com/${{ github.repository }}.wiki.git
-          git branch -M main
           echo "# Wiki" > Home.md
           git add Home.md
           git commit -m "Initialize wiki"
-          git push -u origin main
+          git push -u origin HEAD:master
         fi
+        git branch --show-current
     
     - name: Copy Documentation to Wiki
       if: steps.should_run.outputs.execute == 'true'
@@ -83,7 +84,7 @@ jobs:
         pwd
         ls -la
         echo "Copying Documentation.md to wiki directory"
-        cp Documentation.md wiki/Documentation.md
+        cp Documentation1.md wiki/Documentation1.md
     
     - name: Commit and Push Changes in Wiki
       if: steps.should_run.outputs.execute == 'true'
@@ -105,6 +106,8 @@ jobs:
           echo "Committing files - "
           git diff --staged --name-only
           git commit -m "Automated update of Documentation.md"
-          git push origin main
+          echo 'current branch - '
+          git branch --show-current
+          git push origin HEAD:master
         fi  
       continue-on-error: true
