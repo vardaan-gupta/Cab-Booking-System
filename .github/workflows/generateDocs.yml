@@ -83,7 +83,7 @@ jobs:
         pwd
         ls -la
         echo "Copying Documentation.md to wiki directory"
-        cp Documentation1.md wiki/Documentation1.md
+        cp Documentation.md wiki/Documentation.md
     
     - name: Commit and Push Changes in Wiki
       if: steps.should_run.outputs.execute == 'true'
@@ -98,7 +98,7 @@ jobs:
         git pull origin master || git pull origin main
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add Documentation1.md
+        git add Documentation.md
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
