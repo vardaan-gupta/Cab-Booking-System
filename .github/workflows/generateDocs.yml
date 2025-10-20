@@ -49,7 +49,8 @@ jobs:
         echo "Authenticating with GitHub Copilot"
         copilot --version
         echo "Manual trigger - Generating full documentation"
-        copilot -p "create a new Documentation.md file and add below documentation - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
+        touch Documentation.md
+        copilot -p "Add below documentation in the Documentation.md - Provide a high-level description of the repository purpose and functionality - Include information about the system architecture and main components - Explain how different parts of the system interact with each other" --allow-all-tools
        
     - name: Initialize or Checkout GitHub Wiki
       if: steps.should_run.outputs.execute == 'true'
